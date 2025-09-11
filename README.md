@@ -33,7 +33,7 @@ parai-dost/
 
 ### 1. **Clone the Repository**
 ```sh
-git clone https://github.com/regular-life/PadhAI-Dost
+git clone https://github.com/AB0204/PadhAI-Dost
 cd PadhAI-Dost
 ```
 
