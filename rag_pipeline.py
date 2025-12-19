@@ -1,5 +1,14 @@
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
+try:
+    from langchain.chains import RetrievalQA
+except ImportError:
+    try:
+        from langchain.chains.retrieval_qa.base import RetrievalQA
+    except ImportError:
+        try:
+            from langchain_community.chains import RetrievalQA
+        except ImportError:
+            raise ImportError("Could not import RetrievalQA from any known path.")
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
