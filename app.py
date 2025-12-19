@@ -6,6 +6,9 @@ from pucho import pucho
 from dotenv import load_dotenv
 import os
 import shutil
+from media_handler import upload_media
+from knowledge_graph import generate_knowledge_graph
+import google.generativeai as genai
 
 # Load API key from environment
 load_dotenv()
@@ -148,20 +151,53 @@ render_chat_history()
 # Sidebar: Document upload and extra features
 with st.sidebar:
     st.header("Controls")
-    # Document Upload
-    uploaded_file = st.file_uploader("Upload a PDF, PNG, or TXT file", type=["pdf", "png", "txt"])
+    st.subheader("Document & Media")
+    uploaded_file = st.file_uploader("Upload PDF, TXT, MP3, WAV, MP4", type=["pdf", "png", "txt", "mp3", "wav", "mp4"])
+    
     if not uploaded_file:
-        st.info("Please upload a document to continue.")
+        st.info("Upload a file to start.")
         st.stop()
 
-    try:
-        text = load_document(uploaded_file)
-        st.success("Document loaded successfully!")
-        # Create RAG pipeline using the uploaded document
-        rag = create_rag_pipeline(text, api_key)
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        st.stop()
+    file_ext = uploaded_file.name.split(".")[-1].lower()
+    
+    # Handle Media Files (Audio/Video)
+    if file_ext in ["mp3", "wav", "mp4"]:
+        st.info("Media file detected. Switching to Lecture Sync Mode.")
+        
+        # Save temp file for upload
+        with open("temp_media." + file_ext, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        
+        try:
+            with st.spinner("Uploading media to Gemini... This may take a moment."):
+                media_file = upload_media("temp_media." + file_ext)
+                st.session_state['active_media_file'] = media_file
+                st.success("Media Ready! Ask questions below.")
+        except Exception as e:
+            st.error(f"Media Upload Failed: {e}")
+            st.stop()
+            
+    # Handle Text Documents
+    else:
+        try:
+            text = load_document(uploaded_file)
+            st.success("Document loaded successfully!")
+            rag = create_rag_pipeline(text, api_key)
+            st.session_state['rag_pipeline'] = rag
+            st.session_state['current_text'] = text # Store for knowledge graph
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            st.stop()
+
+    st.markdown("---")
+    st.subheader("Tools")
+    
+    # Knowledge Graph Feature
+    if file_ext not in ["mp3", "wav", "mp4"]:
+        if st.button("Generate Knowledge Graph"):
+            with st.spinner("Drawing detailed concept map..."):
+                dot_code = generate_knowledge_graph(st.session_state.get('current_text', ''), api_key)
+                st.graphviz_chart(dot_code)
 
     st.markdown("---")
     st.subheader("Other Features")
@@ -203,11 +239,27 @@ with st.sidebar:
                 render_chat_history()
 
 # Use Streamlit’s built-in st.chat_input for pinned chat input at the bottom of the page
-user_question = st.chat_input("Ask a question about the document")
+# Chat Input Handling
+user_question = st.chat_input("Ask a question about your material...")
 if user_question:
     st.session_state.chat_history.append({"role": "user", "message": user_question})
     render_chat_history()
-    with st.spinner("Analyzing..."):
-        answer = rag.run(user_question)
+    
+    with st.spinner("Thinking..."):
+        # Pathway 1: Media Chat (Direct Gemini Call)
+        if 'active_media_file' in st.session_state:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-2.0-flash')
+            response = model.generate_content([st.session_state['active_media_file'], user_question])
+            answer = response.text
+            
+        # Pathway 2: RAG Text Chat
+        elif 'rag_pipeline' in st.session_state:
+            rag = st.session_state['rag_pipeline']
+            answer = rag.run(user_question)
+            
+        else:
+            answer = "Please upload a file first."
+
     st.session_state.chat_history.append({"role": "assistant", "message": answer})
     render_chat_history()
