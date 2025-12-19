@@ -33,8 +33,10 @@ try:
     # Quick test to verify key works before user does anything
     first_model = next(iter(genai.list_models()))
 except Exception as e:
-    st.error(f"🚨 Critical Error: Your Google Gemini API Key is invalid or not working.\n\nError Details: {e}")
-    st.info("Please go to 'Manage App' -> 'Settings' -> 'Secrets' and verify your key.")
+    masked_key = f"{api_key[:4]}...{api_key[-4:]}" if api_key else "None"
+    key_len = len(api_key) if api_key else 0
+    st.error(f"🚨 Critical Error: Google rejected your API Key.\n\n**Debug Info:**\n- App saw key starting with: `{masked_key}`\n- Total Length: {key_len} characters\n\n**Error Details:** {e}")
+    st.info("Check your Streamlit Secrets. Ensure no extra quotes or spaces.")
     st.stop()
 
 # Initialize chat history if not already in session state
