@@ -1,8 +1,5 @@
 from langchain_community.vectorstores import FAISS
-try:
-    from langchain.chains import RetrievalQA
-except ImportError:
-    from langchain.chains.retrieval_qa.base import RetrievalQA
+from langchain.chains import RetrievalQA
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
