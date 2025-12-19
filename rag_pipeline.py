@@ -8,7 +8,10 @@ except ImportError:
         try:
             from langchain_community.chains import RetrievalQA
         except ImportError:
-            raise ImportError("Could not import RetrievalQA from any known path.")
+            try:
+                from langchain_classic.chains import RetrievalQA
+            except ImportError:
+                 raise ImportError("Could not import RetrievalQA from any known path.")
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
