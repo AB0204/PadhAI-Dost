@@ -171,7 +171,7 @@ with st.sidebar:
         
         try:
             with st.spinner("Uploading media to Gemini... This may take a moment."):
-                media_file = upload_media("temp_media." + file_ext)
+                media_file = upload_media("temp_media." + file_ext, api_key=api_key)
                 st.session_state['active_media_file'] = media_file
                 st.success("Media Ready! Ask questions below.")
         except Exception as e:
