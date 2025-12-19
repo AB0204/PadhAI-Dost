@@ -13,7 +13,10 @@ except ImportError:
             except ImportError:
                  raise ImportError("Could not import RetrievalQA from any known path.")
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+try:
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+except ImportError:
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 def create_rag_pipeline(text, api_key):
     # Use Google's API-based embeddings
