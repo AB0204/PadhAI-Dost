@@ -5,7 +5,7 @@ from samjha_do import samjha_do
 from pucho import pucho
 from dotenv import load_dotenv
 import os
-import subprocess
+import shutil
 
 # Load API key from environment
 load_dotenv()
@@ -132,10 +132,13 @@ if st.button("Clear this chat"):
 # Button in sidebar to delete the local Chroma database
 with st.sidebar:
     if st.button("Delete Data"):
-        # Run shell command to remove the directory
+        # Use shutil for cross-platform directory removal
         try:
-            subprocess.run("rm -rf ./chroma_db", shell=True, check=True)
-            st.success("Chroma database deleted successfully.")
+            if os.path.exists("./chroma_db"):
+                shutil.rmtree("./chroma_db")
+                st.success("Chroma database deleted successfully.")
+            else:
+                st.warning("Database does not exist.")
         except Exception as e:
             st.error(f"Failed to delete Chroma database: {e}")
 
@@ -146,7 +149,7 @@ render_chat_history()
 with st.sidebar:
     st.header("Controls")
     # Document Upload
-    uploaded_file = st.file_uploader("Upload a PDF or PNG file", type=["pdf", "png"])
+    uploaded_file = st.file_uploader("Upload a PDF, PNG, or TXT file", type=["pdf", "png", "txt"])
     if not uploaded_file:
         st.info("Please upload a document to continue.")
         st.stop()

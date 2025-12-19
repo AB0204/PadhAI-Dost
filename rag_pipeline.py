@@ -4,6 +4,7 @@ from langchain.embeddings.base import Embeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_google_genai import GoogleGenerativeAI
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 class TransformerEmbeddings(Embeddings):
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
@@ -35,7 +36,9 @@ def create_rag_pipeline(text, api_key):
     # Instantiate the free transformer embeddings model
     embeddings_model = TransformerEmbeddings()
 
-    texts = [text]
+    # Split text into chunks
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    texts = text_splitter.split_text(text)
 
     # Create a Chroma vectorstore from texts using our transformer embeddings
     db = Chroma.from_texts(texts, embeddings_model, persist_directory="./chroma_db")

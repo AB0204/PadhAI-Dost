@@ -4,7 +4,10 @@ import pytesseract
 
 
 def load_document(file):
-    """Loads text from a PDF or PNG file."""
+    """Loads text from a PDF, PNG, or TXT file."""
+    if file.size == 0:
+        raise ValueError("The uploaded file is empty.")
+
     if file.type == "application/pdf":
         reader = PdfReader(file)
         text = ""
@@ -15,6 +18,8 @@ def load_document(file):
         img = Image.open(file)
         text = pytesseract.image_to_string(img)
         return text
+    elif file.type == "text/plain":
+        return str(file.read(), "utf-8")
     else:
         raise ValueError(
-            "Unsupported file type. Please upload a PDF or PNG file.")
+            "Unsupported file type. Please upload a PDF, PNG, or TXT file.")
