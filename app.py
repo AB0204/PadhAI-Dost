@@ -26,6 +26,17 @@ if not api_key:
 # Clean up the key (remove quotes or whitespace if user pasted incorrectly)
 api_key = api_key.strip().strip('"').strip("'")
 
+# Configure genai explicitly here to validate the key immediately
+genai.configure(api_key=api_key)
+
+try:
+    # Quick test to verify key works before user does anything
+    list(genai.list_models(limit=1))
+except Exception as e:
+    st.error(f"🚨 Critical Error: Your Google Gemini API Key is invalid or not working.\n\nError Details: {e}")
+    st.info("Please go to 'Manage App' -> 'Settings' -> 'Secrets' and verify your key.")
+    st.stop()
+
 # Initialize chat history if not already in session state
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
