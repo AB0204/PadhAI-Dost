@@ -31,7 +31,7 @@ genai.configure(api_key=api_key)
 
 try:
     # Quick test to verify key works before user does anything
-    list(genai.list_models(limit=1))
+    first_model = next(iter(genai.list_models()))
 except Exception as e:
     st.error(f"🚨 Critical Error: Your Google Gemini API Key is invalid or not working.\n\nError Details: {e}")
     st.info("Please go to 'Manage App' -> 'Settings' -> 'Secrets' and verify your key.")
