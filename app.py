@@ -1,7 +1,3 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import streamlit as st
 from document_loader import load_document
 from rag_pipeline import create_rag_pipeline
@@ -136,18 +132,10 @@ st.header("PadhAI Dost - Your Study Buddy")
 if st.button("Clear this chat"):
     st.session_state.chat_history = []
 
-# Button in sidebar to delete the local Chroma database
-with st.sidebar:
-    if st.button("Delete Data"):
-        # Use shutil for cross-platform directory removal
-        try:
-            if os.path.exists("./chroma_db"):
-                shutil.rmtree("./chroma_db")
-                st.success("Chroma database deleted successfully.")
-            else:
-                st.warning("Database does not exist.")
-        except Exception as e:
-            st.error(f"Failed to delete Chroma database: {e}")
+# Button in sidebar to clear chat history
+if st.sidebar.button("Clear Chat"):
+    st.session_state.chat_history = []
+    st.rerun()
 
 chat_placeholder = st.empty()
 render_chat_history()

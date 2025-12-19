@@ -2,10 +2,9 @@ streamlit
 langchain
 langchain-community
 langchain-google-genai
-chromadb
+faiss-cpu
 pypdf2
 pytesseract
 python-dotenv
-pysqlite3-binary
 pillow
 graphviz
