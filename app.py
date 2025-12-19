@@ -11,11 +11,20 @@ from knowledge_graph import generate_knowledge_graph
 import google.generativeai as genai
 
 # Load API key from environment
+# Load API key from environment or secrets
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
+
+# Fallback to Streamlit secrets if not found in env
+if not api_key and "GEMINI_API_KEY" in st.secrets:
+    api_key = st.secrets["GEMINI_API_KEY"]
+
 if not api_key:
     st.warning("Please enter your Gemini API key.")
     st.stop()
+
+# Clean up the key (remove quotes or whitespace if user pasted incorrectly)
+api_key = api_key.strip().strip('"').strip("'")
 
 # Initialize chat history if not already in session state
 if 'chat_history' not in st.session_state:
