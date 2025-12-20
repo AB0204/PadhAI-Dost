@@ -34,15 +34,15 @@ def create_rag_pipeline(text, api_key):
     import random
     
     db = None
-    # detailed research suggests Free Tier allows ~15 Requests Per Minute.
-    # To stay safe, we should send fewer requests (larger batches) and wait between them.
-    # Batch size 20 is a safe upper bound for payload size usually.
-    batch_size = 20 
+    # "Slow & Steady" Strategy for Free Tier
+    # The limit is 15 RPM (1 request every 4 seconds).
+    # We will go slower than that to be 100% safe.
+    batch_size = 10 
     
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
         retry_count = 0
-        max_retries = 5
+        max_retries = 10 # Give it plenty of chances
         
         while retry_count < max_retries:
             try:
@@ -56,18 +56,19 @@ def create_rag_pipeline(text, api_key):
                 # Check for rate limit error
                 if "429" in str(e) or "ResourceExhausted" in str(e):
                     retry_count += 1
-                    # Aggressive backoff: 5s, 10s, 20s...
-                    wait_time = (5 * retry_count) + random.uniform(0, 1)
-                    print(f"Rate limit hit. Retrying batch {i//batch_size} in {wait_time:.2f}s...")
+                    # Linear backoff with jitter: 10s, 11s, 12s...
+                    wait_time = 10 + retry_count + random.uniform(0, 2)
+                    print(f"Rate limit hit. Retrying batch {i//batch_size} (Attempt {retry_count}) in {wait_time:.2f}s...")
                     time.sleep(wait_time)
                 else:
                     raise e
         
         if retry_count == max_retries:
-            raise RuntimeError("Failed to process document due to persistent rate limiting. Please try a smaller file or wait.")
+            raise RuntimeError("Failed to process document. The file is too large for the Free Tier quota. Please try a shorter document.")
             
-        # 15 RPM = 1 req / 4s. We force 4s sleep to guarantee safety.
-        time.sleep(4)
+        # Hard wait to enforce RPM below 15. 
+        # 5 seconds wait = Max 12 requests per minute.
+        time.sleep(5)
     
     # Save locally if needed, but for ephemeral Streamlit usage, in-memory is fine.
     # db.save_local("faiss_index") 
