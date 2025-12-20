@@ -8,6 +8,7 @@ import os
 import shutil
 from media_handler import upload_media
 from knowledge_graph import generate_knowledge_graph
+from flashcards import generate_flashcards
 import google.generativeai as genai
 
 # Load API key from environment
@@ -43,83 +44,101 @@ except Exception as e:
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
-# --- CUSTOM CSS (Minimal Light Theme) ---
+# --- CUSTOM CSS (Notion-Academic Theme) ---
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600&display=swap');
+
     :root {
-        --primary-bg: #ffffff;        /* Main background */
-        --secondary-bg: #f9f9f9;        /* Container background */
-        --accent-color: #3b82f6;        /* Buttons and highlight */
-        --text-color: #333333;          /* Main text color */
-        --border-color: #dddddd;        /* Light border color */
-        --user-bubble: #dcf8c6;         /* User chat bubble background (light green) */
-        --assistant-bubble: #ffffff;    /* Assistant bubble background (white) */
+        --primary-bg: #ffffff;
+        --secondary-bg: #f7f7f5;
+        --text-color: #37352f;
+        --border-color: #e0e0e0;
+        --accent-color: #2eaadc; /* Notion blue-ish link color */
+        --user-bubble: #f0f0f0;
+        --assistant-bubble: #ffffff;
+    }
+
+    /* Global Font */
+    html, body, [class*="css"] {
+        font-family: 'Source Serif Pro', serif;
+        color: var(--text-color);
     }
 
     /* Page layout */
     .stApp {
         background-color: var(--primary-bg) !important;
-        color: var(--text-color) !important;
-        padding-bottom: 60px; /* space at the bottom for the pinned chat input */
     }
 
-    /* Sidebar styling */
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: var(--secondary-bg) !important;
         border-right: 1px solid var(--border-color);
     }
 
-    /* Chat container */
+    /* Chat Container */
     .chat-container {
-        background-color: var(--secondary-bg);
-        padding: 10px;
-        border-radius: 5px;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 3px;
         max-height: calc(100vh - 200px);
         overflow-y: auto;
-        border: 1px solid var(--border-color);
+        border: none; /* Notion is cleaner without extensive borders */
     }
 
+    /* Messages */
     .user-message {
         text-align: right;
         background-color: var(--user-bubble);
-        padding: 8px;
-        border-radius: 6px;
-        margin: 5px 0;
-        color: #000000;
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin: 10px 0;
+        color: var(--text-color);
+        font-family: sans-serif; /* Contrast for user input */
+        font-size: 0.95rem;
         border: 1px solid var(--border-color);
     }
 
     .assistant-message {
         text-align: left;
         background-color: var(--assistant-bubble);
-        padding: 8px;
-        border-radius: 6px;
-        margin: 5px 0;
+        padding: 12px 0; /* Minimal padding like a document */
+        margin: 10px 0;
         color: var(--text-color);
-        border: 1px solid var(--border-color);
+        font-size: 1rem;
+        line-height: 1.6;
+        border: none;
     }
 
     /* Headers */
-    h1, h2, h3, h4 {
-        color: var(--text-color);
+    h1, h2, h3 {
+        font-family: 'Source Serif Pro', serif;
+        font-weight: 600;
+        color: #000000;
         margin-bottom: 0.5rem;
     }
 
-    /* Buttons and inputs */
+    /* Buttons */
     .stButton > button {
-        background-color: var(--accent-color) !important;
-        color: #ffffff !important;
-        border: none;
+        background-color: #ffffff !important;
+        color: var(--text-color) !important;
+        border: 1px solid #d0d0d0;
         border-radius: 4px;
+        font-family: sans-serif;
+        transition: all 0.2s;
     }
     .stButton > button:hover {
-        background-color: #2563eb !important;
+        background-color: #efefef !important;
+        border-color: #a0a0a0;
     }
+
+    /* Inputs */
     .stTextInput>div>div>input {
-        color: var(--text-color);
         background-color: #ffffff;
         border: 1px solid var(--border-color);
+        border-radius: 3px;
+        color: var(--text-color);
     }
     </style>
     """,
@@ -212,6 +231,31 @@ with st.sidebar:
             with st.spinner("Drawing detailed concept map..."):
                 dot_code = generate_knowledge_graph(st.session_state.get('current_text', ''), api_key)
                 st.graphviz_chart(dot_code)
+
+    st.markdown("---")
+    st.subheader("Flashcards (Anki)")
+    if st.button("Generate Flashcards"):
+        if 'current_text' not in st.session_state:
+             st.error("Please upload a document first.")
+        else:
+            with st.spinner("Generating flashcards for you..."):
+                cards, csv_content = generate_flashcards(st.session_state.get('current_text', ''), num_cards=10, api_key=api_key)
+                
+                if cards:
+                    st.success(f"Generated {len(cards)} flashcards!")
+                    # Preview first few
+                    st.write(cards[:2]) 
+                    
+                    # Store in session state to keep download button active? 
+                    # Simpler: just show button now.
+                    st.download_button(
+                        label="Download Anki CSV",
+                        data=csv_content,
+                        file_name="padhai_flashcards.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.error(csv_content) # Contains error message
 
     st.markdown("---")
     st.subheader("Other Features")
