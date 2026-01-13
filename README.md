@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PadhAI Dost 🤖📚
 
-## Getting Started
+**Your AI-Powered Study Companion**
 
-First, run the development server:
+> PadhAI Dost (Scholar Friend) is an intelligent learning assistant that helps students study smarter, not harder. By combining RAG (Retrieval Augmented Generation) with intuitive study cards, it transforms static documents into interactive learning experiences.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[![Live Demo](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge&logo=vercel)](https://your-demo-link.com)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+---
+
+## 🚀 Key Features
+
+*   **📚 Auto-Flashcards**: Upload any PDF/Text and instantly generate flashcards with key concepts.
+*   **🧠 Intelligent Chat**: Ask questions about your documents and get answers cited from the source.
+*   **📊 Study Analytics (Coming Soon)**: Track your learning progress, streaks, and mastery levels.
+*   **🔄 Hybrid Search RAG**: Combines semantic vector search with keyword matching for high-precision answers.
+*   **🎨 Minimalist UI**: Distraction-free interface designed for deep work, inspired by Notion.
+
+---
+
+## 🛠️ Tech Stack
+
+*   **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Shadcn UI
+*   **Backend**: Python (FastAPI), LangChain
+*   **AI/ML**: OpenAI (GPT-4o), Google Gemini Pro
+*   **Database**: PostgreSQL (Neon), ChromaDB (Vector Store)
+*   **Deployment**: Vercel (Frontend), Railway/Render (Backend)
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    User[User] -->|Uploads PDF| Frontend[Next.js Frontend]
+    User -->|Asks Question| Frontend
+    
+    subgraph "Backend Infrastructure"
+        Frontend -->|API Request| Backend[FastAPI Backend]
+        Backend -->|Process Text| Chunker[Text Splitter]
+        Chunker -->|Embed| EmbedModel[Embedding Model]
+        EmbedModel -->|Store| VectorDB[(ChromaDB)]
+        
+        Backend -->|Query| LLM[LLM (OpenAI/Gemini)]
+        VectorDB -->|Retrieve| LLM
+    end
+    
+    LLM -->|Answer/Flashcards| Backend
+    Backend -->|Response| Frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚡ Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
+*   Node.js 18+
+*   Python 3.10+
+*   Docker (Optional)
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/padhai-dost-v2.git
+    cd padhai-dost-v2
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **Frontend Setup**
+    ```bash
+    npm install
+    npm run dev
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  **Backend Setup**
+    ```bash
+    cd python-backend
+    python -m venv venv
+    source venv/bin/activate  # Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    uvicorn api:app --reload
+    ```
 
-## Deploy on Vercel
+4.  **Environment Variables**
+    Create a `.env` file in the root:
+    ```env
+    NEXT_PUBLIC_API_URL=http://localhost:8000
+    OPENAI_API_KEY=your_key_here
+    DATABASE_URL=your_postgres_url
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📸 Screenshots
+
+| Dashboard | Study Mode |
+|:---:|:---:|
+| ![Dashboard Placeholder](http://placehold.it/600x400) | ![Study Mode Placeholder](http://placehold.it/600x400) |
+
+---
+
+## 🤝 Contributing
+
+Contributions are always welcome! Please see `CONTRIBUTING.md` for details.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+---
+
+## 📬 Contact
+
+**Abhi Bhardwaj** - [LinkedIn](https://linkedin.com/in/abhi-bhardwaj) - abhi@example.com
+
+Project Link: [https://github.com/AB0204/PadhAI-Dost](https://github.com/AB0204/PadhAI-Dost)
