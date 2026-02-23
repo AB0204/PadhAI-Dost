@@ -63,7 +63,7 @@ graph TD
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/padhai-dost-v2.git
+    git clone https://github.com/AB0204/PadhAI-Dost.git
     cd padhai-dost-v2
     ```
 
@@ -114,6 +114,6 @@ Contributions are always welcome! Please see `CONTRIBUTING.md` for details.
 
 ## 📬 Contact
 
-**Abhi Bhardwaj** - [LinkedIn](https://linkedin.com/in/abhi-bhardwaj) - abhi@example.com
+**Abhi Bhardwaj** - [LinkedIn](https://linkedin.com/in/abhi-bhardwaj) - [GitHub](https://github.com/AB0204)
 
 Project Link: [https://github.com/AB0204/PadhAI-Dost](https://github.com/AB0204/PadhAI-Dost)
