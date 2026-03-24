@@ -234,7 +234,7 @@ Google Gemini API Key
 
 ```bash
 # Clone repository
-git clone https://github.com/AB0204/PadhAI-Dost.git
+git clone https://github.com/Abhics8/PadhAI-Dost.git
 cd PadhAI-Dost
 
 # Install dependencies
@@ -615,7 +615,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 🌐 Portfolio: [ab0204.github.io/Portfolio](https://ab0204.github.io/Portfolio/)
 - 💼 LinkedIn: [linkedin.com/in/abhi-bhardwaj](https://www.linkedin.com/in/abhi-bhardwaj-23b0961a0/)
 - 📧 Email: abhibhardwaj427@gmail.com
-- 💻 GitHub: [@AB0204](https://github.com/AB0204)
+- 💻 GitHub: [@Abhics8](https://github.com/Abhics8)
 - 📝 Blog: [zerotooneblog.hashnode.dev](https://zerotooneblog.hashnode.dev)
 
 ---
